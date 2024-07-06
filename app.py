@@ -73,11 +73,7 @@ if st.sidebar.checkbox('Load Model'):
         max_value=20, value=2
     )
         
-    color_pick_list = []
-    for i in range(len(class_labels)):
-        classname = class_labels[i]
-        color = color_picker_fn(classname, i)
-        color_pick_list.append(color)
+
 
     # Image
     if options == 'Image':
@@ -138,6 +134,12 @@ if st.sidebar.checkbox('Load Model'):
         #     pred = st.checkbox(f'Predict Using {model_type}')
         #     cap = cv2.VideoCapture(rtsp_url)
 
+
+    color_pick_list = []
+    for i in range(len(class_labels)):
+        classname = class_labels[i]
+        color = color_picker_fn(classname, i)
+        color_pick_list.append(color)
 
 if (cap != None) and pred:
     stframe1 = st.empty()

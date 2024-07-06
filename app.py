@@ -28,7 +28,7 @@ cap = None
 
 path_model_file = st.sidebar.text_input(
     f'path to {model_type} Model:',
-    f'eg: License-plate-identification/carnumber.pt'
+    f'eg: dir/{model_type}.pt'
 )
 if st.sidebar.checkbox('Load Model'):
         

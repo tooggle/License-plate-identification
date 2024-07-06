@@ -49,7 +49,7 @@ def get_yolo(img, model_type, model, confidence, color_pick_list, class_list, dr
     #                 plot_one_box([xmin, ymin, xmax, ymax], img, label=class_list[int(cs)],
     #                                 color=color_pick_list[int(cs)], line_thickness=draw_thick)
     #                 current_no_class.append([class_list[int(cs)]])
-    return img, current_no_class = img
+    return img, current_no_class
 
 
 def get_system_stat(stframe1, stframe2, stframe3, fps, df_fq):

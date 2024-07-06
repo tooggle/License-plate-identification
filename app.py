@@ -72,17 +72,17 @@ if st.sidebar.checkbox('Load Model'):
         'Draw Thickness:', min_value=1,
         max_value=20, value=2
     )
-    
+        
+    color_pick_list = []
+    for i in range(len(class_labels)):
+        classname = class_labels[i]
+        color = color_picker_fn(classname, i)
+        color_pick_list.append(color)
 
     # Image
     if options == 'Image':
         upload_img_file = st.sidebar.file_uploader(
             'Upload Image', type=['jpg', 'jpeg', 'png'])
-        color_pick_list = []
-        for i in range(len(class_labels)):
-          classname = class_labels[i]
-          color = color_picker_fn(classname, i)
-          color_pick_list.append(color)  
         if upload_img_file is not None:
             pred = st.checkbox(f'Predict Using {model_type}')
             file_bytes = np.asarray(
@@ -110,11 +110,6 @@ if st.sidebar.checkbox('Load Model'):
     if options == 'Video':
         upload_video_file = st.sidebar.file_uploader(
             'Upload Video', type=['mp4', 'avi', 'mkv'])
-        color_pick_list = []
-        for i in range(len(class_labels)):
-           classname = class_labels[i]
-           color = color_picker_fn(classname, i)
-           color_pick_list.append(color)
         if upload_video_file is not None:
             pred = st.checkbox(f'Predict Using {model_type}')
 
@@ -173,4 +168,3 @@ if (cap != None) and pred:
         
         # Updating Inference results
         get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
-

@@ -80,7 +80,7 @@ if st.sidebar.checkbox('Load Model'):
         color_pick_list.append(color)
 
     # Image
-    if options i== 'Image':
+    if options == 'Image':
         upload_img_file = st.sidebar.file_uploader(
             'Upload Image', type=['jpg', 'jpeg', 'png'])
         if upload_img_file is not None:

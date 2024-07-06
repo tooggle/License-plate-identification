@@ -18,7 +18,7 @@ st.sidebar.title('Settings')
 # Choose the model
 model_type = st.sidebar.selectbox(
     # 'Choose YOLO Model', ('YOLO Model', 'YOLOv8', 'YOLOv7')
-    'Choose YOLO Model', ('carnumber')
+    'Choose YOLO Model', ('YOLO Model', 'carnumber')
 )
 
 st.title(f'{model_type} Predictions')

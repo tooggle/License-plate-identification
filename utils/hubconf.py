@@ -54,7 +54,7 @@ def create(name, pretrained, channels, classes, autoshape):
         raise Exception(s) from e
 
 
-def custom(path_or_model='path/to/model.pt', autoshape=True, gpu=False):
+def custom(path_or_model='streamlit-yolo-master/model.pt', autoshape=True, gpu=False):
     """custom mode
 
     Arguments (3 options):

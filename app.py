@@ -74,10 +74,7 @@ if st.sidebar.checkbox('Load Model'):
     )
         
     color_pick_list = []
-    for i in range(len(class_labels)):
-        classname = class_labels[i]
-        color = color_picker_fn(classname, i)
-        color_pick_list.append(color)
+
 
     # Image
     if options == 'Image':
@@ -89,6 +86,10 @@ if st.sidebar.checkbox('Load Model'):
                 bytearray(upload_img_file.read()), dtype=np.uint8)
             img = cv2.imdecode(file_bytes, 1)
             FRAME_WINDOW.image(img, channels='BGR')
+                for i in range(len(class_labels)):
+                    classname = class_labels[i]
+                    color = color_picker_fn(classname, i)
+                    color_pick_list.append(color)
 
             if pred:
                 img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
@@ -112,7 +113,10 @@ if st.sidebar.checkbox('Load Model'):
             'Upload Video', type=['mp4', 'avi', 'mkv'])
         if upload_video_file is not None:
             pred = st.checkbox(f'Predict Using {model_type}')
-
+        for i in range(len(class_labels)):
+            classname = class_labels[i]
+            color = color_picker_fn(classname, i)
+            color_pick_list.append(color)
             tfile = tempfile.NamedTemporaryFile(delete=False)
             tfile.write(upload_video_file.read())
             cap = cv2.VideoCapture(tfile.name)

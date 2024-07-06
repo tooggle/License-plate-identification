@@ -73,7 +73,7 @@ if st.sidebar.checkbox('Load Model'):
         max_value=20, value=2
     )
         
-     color_pick_list = []
+    color_pick_list = []
     for i in range(len(class_labels)):
         classname = class_labels[i]
         color = color_picker_fn(classname, i)
@@ -168,3 +168,4 @@ if (cap != None) and pred:
         
         # Updating Inference results
         get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
+

@@ -61,7 +61,7 @@ if st.sidebar.checkbox('Load Model'):
 
     # Inference Mode
     options = st.sidebar.radio(
-        'Options:', ('Webcam', 'Image', 'Video', 'RTSP'), index=1)
+        'Options:', ('Image', 'Video'), index=1)
 
     # Confidence
     confidence = st.sidebar.slider(

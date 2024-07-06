@@ -61,7 +61,7 @@ if st.sidebar.checkbox('Load Model'):
 
     # Inference Mode
     options = st.sidebar.radio(
-        'Options:', ('Image', 'Video'), index=1)
+        'Options:', ('Image', 'Video'), index=0)
 
     # Confidence
     confidence = st.sidebar.slider(
@@ -70,7 +70,7 @@ if st.sidebar.checkbox('Load Model'):
     # Draw thickness
     draw_thick = st.sidebar.slider(
         'Draw Thickness:', min_value=1,
-        max_value=20, value=3
+        max_value=20, value=2
     )
         
     color_pick_list = []

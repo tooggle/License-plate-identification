@@ -119,6 +119,25 @@ if st.sidebar.checkbox('Load Model'):
             # if pred:
 
 
+    # Web-cam
+    #     if options == 'Webcam':
+    #         cam_options = st.sidebar.selectbox('Webcam Channel',
+    #                                         ('Select Channel', '0', '1', '2', '3'))
+    #
+    #         if not cam_options == 'Select Channel':
+    #             pred = st.checkbox(f'Predict Using {model_type}')
+    #             cap = cv2.VideoCapture(int(cam_options))
+
+
+        # RTSP
+        # if options == 'RTSP':
+        #     rtsp_url = st.sidebar.text_input(
+        #         'RTSP URL:',
+        #         'eg: rtsp://admin:name6666@198.162.1.58/cam/realmonitor?channel=0&subtype=0'
+        #     )
+        #     pred = st.checkbox(f'Predict Using {model_type}')
+        #     cap = cv2.VideoCapture(rtsp_url)
+
 
 if (cap != None) and pred:
     stframe1 = st.empty()

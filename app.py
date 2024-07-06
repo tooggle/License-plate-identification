@@ -73,85 +73,52 @@ if st.sidebar.checkbox('Load Model'):
         max_value=20, value=2
     )
         
-def color_picker_fn(classname, index):
-    # 自定义颜色选择函数
-    return st.color_picker(f'Pick a color for {classname}', '#FFFFFF')
+    color_pick_list = []
+    for i in range(len(class_labels)):
+        classname = class_labels[i]
+        color = color_picker_fn(classname, i)
+        color_pick_list.append(color)
 
-# 上传图片
-if options == 'Image':
-    upload_img_file = st.sidebar.file_uploader('Upload Image', type=['jpg', 'jpeg', 'png'])
-    if upload_img_file is not None:
-        file_bytes = np.asarray(bytearray(upload_img_file.read()), dtype=np.uint8)
-        img = cv2.imdecode(file_bytes, 1)
-        FRAME_WINDOW.image(img, channels='BGR')
-        
-        # 颜色选择
-        color_pick_list = []
-        for i in range(len(class_labels)):
-            classname = class_labels[i]
-            color = color_picker_fn(classname, i)
-            color_pick_list.append(color)
-
-        pred = st.checkbox(f'Predict Using {model_type}')
-        if pred:
-            img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
+    # Image
+    if options i== 'Image':
+        upload_img_file = st.sidebar.file_uploader(
+            'Upload Image', type=['jpg', 'jpeg', 'png'])
+        if upload_img_file is not None:
+            pred = st.checkbox(f'Predict Using {model_type}')
+            file_bytes = np.asarray(
+                bytearray(upload_img_file.read()), dtype=np.uint8)
+            img = cv2.imdecode(file_bytes, 1)
             FRAME_WINDOW.image(img, channels='BGR')
 
-            # 当前检测到的类别数量
-            class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
-            class_fq = json.dumps(class_fq, indent=4)
-            class_fq = json.loads(class_fq)
-            df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
-            
-            # 更新推理结果
-            with st.container():
-                st.markdown("<h2>Inference Statistics</h2>", unsafe_allow_html=True)
-                st.markdown("<h3>Detected objects in current Frame</h3>", unsafe_allow_html=True)
-                st.dataframe(df_fq, use_container_width=True)
-
-# 上传视频
-if options == 'Video':
-    upload_video_file = st.sidebar.file_uploader('Upload Video', type=['mp4', 'avi', 'mkv'])
-    if upload_video_file is not None:
-        tfile = tempfile.NamedTemporaryFile(delete=False)
-        tfile.write(upload_video_file.read())
-        cap = cv2.VideoCapture(tfile.name)
-        
-        # 颜色选择
-        color_pick_list = []
-        for i in range(len(class_labels)):
-            classname = class_labels[i]
-            color = color_picker_fn(classname, i)
-            color_pick_list.append(color)
-
-        pred = st.checkbox(f'Predict Using {model_type}')
-        if pred:
-            stframe1 = st.empty()
-            stframe2 = st.empty()
-            stframe3 = st.empty()
-            p_time = time.time()
-            while cap.isOpened():
-                success, img = cap.read()
-                if not success:
-                    st.error(f"{options} NOT working\nCheck {options} properly!!", icon="🚨")
-                    break
-
+            if pred:
                 img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
                 FRAME_WINDOW.image(img, channels='BGR')
 
-                # 计算FPS
-                c_time = time.time()
-                fps = 1 / (c_time - p_time)
-                p_time = c_time
-
-                # 当前检测到的类别数量
+                # Current number of classes
                 class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
-                class_fq = json.dumps(class_fq, indent=4)
+                class_fq = json.dumps(class_fq, indent = 4)
                 class_fq = json.loads(class_fq)
                 df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
+                    
+                # Updating Inference results
+                with st.container():
+                    st.markdown("<h2>Inference Statistics</h2>", unsafe_allow_html=True)
+                    st.markdown("<h3>Detected objects in curret Frame</h3>", unsafe_allow_html=True)
+                    st.dataframe(df_fq, use_container_width=True)
+        
+    # Video
+    if options == 'Video':
+        upload_video_file = st.sidebar.file_uploader(
+            'Upload Video', type=['mp4', 'avi', 'mkv'])
+        if upload_video_file is not None:
+            pred = st.checkbox(f'Predict Using {model_type}')
 
-                # 更新推理结果
-                get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
+            tfile = tempfile.NamedTemporaryFile(delete=False)
+            tfile.write(upload_video_file.read())
+            cap = cv2.VideoCapture(tfile.name)
+            # if pred:
+
+
 
 if (cap != None) and pred:
     stframe1 = st.empty()

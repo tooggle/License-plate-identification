@@ -6,6 +6,7 @@ import numpy as np
 import tempfile
 import time
 from collections import Counter
+from PIL import Image
 import json
 import pandas as pd
 from model_utils import get_yolo, color_picker_fn, get_system_stat

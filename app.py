@@ -28,7 +28,7 @@ cap = None
 
 path_model_file = st.sidebar.text_input(
     f'path to {model_type} Model:',
-    f'{model_type}.pt'
+    f'eg: dir/{model_type}.pt'
 )
 if st.sidebar.checkbox('Load Model'):
         
@@ -105,7 +105,7 @@ if st.sidebar.checkbox('Load Model'):
                     st.markdown("<h2>Inference Statistics</h2>", unsafe_allow_html=True)
                     st.markdown("<h3>Detected objects in curret Frame</h3>", unsafe_allow_html=True)
                     st.dataframe(df_fq, use_container_width=True)
-
+        
     # Video
     if options == 'Video':
         upload_video_file = st.sidebar.file_uploader(

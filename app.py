@@ -10,9 +10,27 @@ import json
 import pandas as pd
 from model_utils import get_yolo, color_picker_fn, get_system_stat
 # from ultralytics import YOLO
-
+import io
+import os
 
 p_time = 0
+
+def open_image_as_file(path):
+    # 读取图像
+    img = cv2.imread(path)
+    if img is None:
+        st.error(f"Error: Unable to read the image from path: {path}")
+        return None
+    # 将图像编码为字节
+    success, img_encoded = cv2.imencode('.jpg', img)
+    if not success:
+        st.error(f"Error: Unable to encode the image to bytes")
+        return None
+    # 使用 io.BytesIO 模拟文件对象
+    img_file = io.BytesIO(img_encoded.tobytes())
+    img_file.name = path  # 设置文件名属性
+    return img_file
+
 
 st.sidebar.title('Settings')
 # Choose the model
@@ -79,21 +97,36 @@ if st.sidebar.checkbox('Load Model'):
         color = color_picker_fn(classname, i)
         color_pick_list.append(color)
 
-    # Image
+  # Image
     if options == 'Image':
-        upload_img_file = st.sidebar.file_uploader(
-            'Upload Image', type=['jpg', 'jpeg', 'png'])
+        option1 = st.sidebar.selectbox(
+             'you can select some image',
+             ('default','image_1', 'image_2'))
+        if option1 =='default':
+            upload_img_file = st.sidebar.file_uploader('Upload Image', type=['jpg', 'jpeg', 'png'])
+        if option1 =='image_1':
+            upload_img_file = open_image_as_file('image/1.jpg')
+        else:
+            upload_img_file = open_image_as_file('image/2.jpg')
         if upload_img_file is not None:
             pred = st.checkbox(f'Predict Using {model_type}')
             file_bytes = np.asarray(
                 bytearray(upload_img_file.read()), dtype=np.uint8)
             img = cv2.imdecode(file_bytes, 1)
             FRAME_WINDOW.image(img, channels='BGR')
-
+    #   # Image
+    # if options == 'Image':
+    #     upload_img_file = st.sidebar.file_uploader(
+    #         'Upload Image', type=['jpg', 'jpeg', 'png'])
+    #     if upload_img_file is not None:
+    #         pred = st.checkbox(f'Predict Using {model_type}')
+    #         file_bytes = np.asarray(
+    #             bytearray(upload_img_file.read()), dtype=np.uint8)
+    #         img = cv2.imdecode(file_bytes, 1)
+    #         FRAME_WINDOW.image(img, channels='BGR')
             if pred:
                 img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
                 FRAME_WINDOW.image(img, channels='BGR')
-
                 # Current number of classes
                 class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
                 class_fq = json.dumps(class_fq, indent = 4)
@@ -112,13 +145,10 @@ if st.sidebar.checkbox('Load Model'):
             'Upload Video', type=['mp4', 'avi', 'mkv'])
         if upload_video_file is not None:
             pred = st.checkbox(f'Predict Using {model_type}')
-
             tfile = tempfile.NamedTemporaryFile(delete=False)
             tfile.write(upload_video_file.read())
             cap = cv2.VideoCapture(tfile.name)
             # if pred:
-
-
     # Web-cam
     #     if options == 'Webcam':
     #         cam_options = st.sidebar.selectbox('Webcam Channel',
@@ -127,8 +157,6 @@ if st.sidebar.checkbox('Load Model'):
     #         if not cam_options == 'Select Channel':
     #             pred = st.checkbox(f'Predict Using {model_type}')
     #             cap = cv2.VideoCapture(int(cam_options))
-
-
         # RTSP
         # if options == 'RTSP':
         #     rtsp_url = st.sidebar.text_input(
@@ -137,8 +165,6 @@ if st.sidebar.checkbox('Load Model'):
         #     )
         #     pred = st.checkbox(f'Predict Using {model_type}')
         #     cap = cv2.VideoCapture(rtsp_url)
-
-
 if (cap != None) and pred:
     stframe1 = st.empty()
     stframe2 = st.empty()
@@ -151,10 +177,8 @@ if (cap != None) and pred:
                 icon="🚨"
             )
             break
-
         img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
         FRAME_WINDOW.image(img, channels='BGR')
-
         # FPS
         c_time = time.time()
         fps = 1 / (c_time - p_time)

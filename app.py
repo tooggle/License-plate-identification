@@ -81,7 +81,7 @@ if st.sidebar.checkbox('Load Model'):
 
     # Image
     if options == 'Image':
-        option1 = st.selectbox(
+        option1 = st.sidebar.selectbox(
              'you can select some image',
              ('image_1', 'image_2'))
         upload_img_file = st.sidebar.file_uploader(

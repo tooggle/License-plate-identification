@@ -111,10 +111,10 @@ if st.sidebar.checkbox('Load Model'):
              'you can select some image',
              ('image_1', 'image_2'))
             if option1 =="image_1":
-                img=Image.open("image/1.jpg")
+                img=cv2.imread('image/1.jpg')
                 file_up="image/1.jpg"
             else:
-                img=Image.open("image/2.jpg")
+                img=cv2.imread('image/2.jpg')
                 file_up="image/1.jpg"
     # Video
     if options == 'Video':

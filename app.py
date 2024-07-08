@@ -89,8 +89,10 @@ if st.sidebar.checkbox('Load Model'):
         if upload_img_file is None:
             if option1 =="image_1":
                 img=cv2.imread('image/1.jpg')
+                upload_img_file="image/1.jpg"
             else:
                 img=cv2.imread('image/2.jpg')
+                upload_img_file="image/2.jpg"
         if upload_img_file is not None:
             pred = st.checkbox(f'Predict Using {model_type}')
             file_bytes = np.asarray(

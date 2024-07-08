@@ -6,7 +6,6 @@ import numpy as np
 import tempfile
 import time
 from collections import Counter
-from PIL import Image
 import json
 import pandas as pd
 from model_utils import get_yolo, color_picker_fn, get_system_stat
@@ -112,10 +111,8 @@ if st.sidebar.checkbox('Load Model'):
              ('image_1', 'image_2'))
             if option1 =="image_1":
                 img=cv2.imread('image/1.jpg')
-                file_up="image/1.jpg"
             else:
                 img=cv2.imread('image/2.jpg')
-                file_up="image/1.jpg"
     # Video
     if options == 'Video':
         upload_video_file = st.sidebar.file_uploader(

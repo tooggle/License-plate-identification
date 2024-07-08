@@ -82,18 +82,8 @@ if st.sidebar.checkbox('Load Model'):
 
     # Image
     if options == 'Image':
-        option1 = st.sidebar.selectbox(
-             'you can select some image',
-             ('image_1', 'image_2'))
         upload_img_file = st.sidebar.file_uploader(
             'Upload Image', type=['jpg', 'jpeg', 'png'])
-        if upload_img_file is None:
-            if option1 =="image_1":
-                img=Image.open("image/1.jpg")
-                file_up="image/1.jpg"
-            else:
-                img=Image.open("image/2.jpg")
-                file_up="image/1.jpg"
         if upload_img_file is not None:
             pred = st.checkbox(f'Predict Using {model_type}')
             file_bytes = np.asarray(
@@ -116,7 +106,16 @@ if st.sidebar.checkbox('Load Model'):
                     st.markdown("<h2>Inference Statistics</h2>", unsafe_allow_html=True)
                     st.markdown("<h3>Detected objects in curret Frame</h3>", unsafe_allow_html=True)
                     st.dataframe(df_fq, use_container_width=True)
-        
+        if upload_img_file is None:
+            option1 = st.sidebar.selectbox(
+             'you can select some image',
+             ('image_1', 'image_2'))
+            if option1 =="image_1":
+                img=Image.open("image/1.jpg")
+                file_up="image/1.jpg"
+            else:
+                img=Image.open("image/2.jpg")
+                file_up="image/1.jpg"
     # Video
     if options == 'Video':
         upload_video_file = st.sidebar.file_uploader(

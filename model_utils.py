@@ -14,9 +14,18 @@ def get_gpu_memory():
     gpu_memory = [int(x) for x in result.strip().split('\n')]
     return gpu_memory[0]
 
-def color_picker_fn(classname, key):
-    color_picke = st.sidebar.color_picker(f'{classname}:', '#ff0003', key=key)
-    color_rgb_list = list(ImageColor.getcolor(str(color_picke), "RGB"))
+# def color_picker_fn(classname, key):
+#     color_picke = st.sidebar.color_picker(f'{classname}:', '#ff0003', key=key)
+#     color_rgb_list = list(ImageColor.getcolor(str(color_picke), "RGB"))
+#     color = [color_rgb_list[2], color_rgb_list[1], color_rgb_list[0]]
+#     return color
+
+# 定义全局变量来存储颜色值
+GLOBAL_COLOR = '#ff0003'  # 你可以在这里设置你想要的默认颜色
+
+def get_global_color():
+    # 将全局颜色值转换为RGB格式
+    color_rgb_list = list(ImageColor.getcolor(GLOBAL_COLOR, "RGB"))
     color = [color_rgb_list[2], color_rgb_list[1], color_rgb_list[0]]
     return color
 

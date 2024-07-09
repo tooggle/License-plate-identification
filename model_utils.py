@@ -15,10 +15,12 @@ def get_gpu_memory():
     return gpu_memory[0]
 
 def color_picker_fn(classname, key):
-    color_picke = st.sidebar.color_picker(f'{classname}:', '#ff0003', key=key)
+    # color_picke = st.sidebar.color_picker(f'{classname}:', '#ff0003', key=key)
+    color_picke = '#ff0003'
     color_rgb_list = list(ImageColor.getcolor(str(color_picke), "RGB"))
     color = [color_rgb_list[2], color_rgb_list[1], color_rgb_list[0]]
     return color
+
 
 
 def get_yolo(img, model_type, model, confidence, color_pick_list, class_list, draw_thick):

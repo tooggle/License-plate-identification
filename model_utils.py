@@ -33,10 +33,10 @@ def get_yolo(img, model_type, model, confidence, color_pick_list, class_list, dr
             xmin, ymin, xmax, ymax, conf, id, class_name = int(box['xmin'][i]), int(box['ymin'][i]), int(box['xmax'][i]), \
                 int(box['ymax'][i]), box['confidence'][i], box['class'][i], box['name'][i]
             if conf > confidence:
-                plot_one_box([xmin, ymin, xmax, ymax], img, label=class_name,
-                                color=color_pick_list[id], line_thickness=draw_thick)
-                # img = plot_one_box([xmin, ymin, xmax, ymax], img, label=class_name,
-                #              color=color_pick_list[id], line_thickness=draw_thick)
+                # plot_one_box([xmin, ymin, xmax, ymax], img, label=class_name,
+                #                 color=color_pick_list[id], line_thickness=draw_thick)
+                img = plot_one_box([xmin, ymin, xmax, ymax], img, label=class_name,
+                              color=color_pick_list[id], line_thickness=draw_thick)
             current_no_class.append([class_name])
 
     # if model_type == 'YOLOv8':

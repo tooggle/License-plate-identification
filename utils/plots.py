@@ -102,14 +102,18 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=3):
         pil_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         draw = ImageDraw.Draw(pil_img)
         tf = max(tl - 1, 1)  # font thickness
-        font = ImageFont.truetype("SimHei.ttf", max(15, int(tl * 2)), encoding="utf-8")  # 确保SimHei.ttf在你的文件系统中是可访问的
-        text_width, text_height = draw.textsize(label, font=font)
+        # 确保SimHei.ttf字体文件在你的文件系统中是可访问的
+        font = ImageFont.truetype("SimHei.ttf", max(15, int(tl * 2)), encoding="utf-8")
+        # 直接从ImageDraw模块调用textsize函数
+        text_width, text_height = ImageDraw.textsize(label, font=font)
         # 计算文本背景框的坐标
-        text_box_coords = (c1[0], c1[1] - text_height - 1, c1[0] + text_width, c1[1] - 1)
+        text_bottom_left = (c1[0], c1[1] + text_height)
+        text_box_coords = (c1[0], text_bottom_left[1], c1[0] + text_width, c1[1] - 1)
         # 绘制文本背景框
-        draw.rectangle(text_box_coords, fill=color)
+        draw.rectangle(text_box_coords, fill=(255, 255, 255))  # 使用白色背景
         # 绘制文本
-        draw.text((c1[0], c1[1] - text_height - 1), label, font=font, fill="white")
+        # 注意：Pillow中text方法的坐标是文本左上角的坐标
+        draw.text((c1[0], text_bottom_left[1]), label, font=font, fill="black")   
         # 将PIL图像转换回OpenCV图像格式
         img = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
     return img

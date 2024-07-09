@@ -76,14 +76,16 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=3):
     if label:
         tf = max(tl - 1, 1)  # font thickness
         t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
-        font_size = t_size[1]
-        font = ImageFont.truetype(r"SimHei.ttf", font_size, encoding="utf-8")
-        t_size = font.getsize(label)
+        # font_size = t_size[1]
+        font_size = max(15, int(tl * 2))  # 增加字体大小，最小值为30
+        font = ImageFont.truetype(r"D:\Apps\YOLOv7\yolov7-main\yolov7-main\fonts\SimHei.ttf", font_size, encoding="utf-8")
+        t_size = font.getbbox(label)
         c2 = c1[0] + t_size[0], c1[1] - t_size[1]
         cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
         img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         draw = ImageDraw.Draw(img)
-        draw.text((c1[0], c2[1]), label, (0, 0, 0), font=font)
+        draw.text((c1[0], c2[1]), label, fill = (255, 255, 255), font=font)
+
         # cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
         return cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
 

@@ -77,7 +77,7 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=3):
         tf = max(tl - 1, 1)  # font thickness
         t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
         font_size = t_size[1]
-        font = ImageFont.truetype("SimHei.ttf", font_size, encoding="utf-8")
+        font = ImageFont.truetype(r"SimHei.ttf", font_size, encoding="utf-8")
         t_size = font.getsize(label)
         c2 = c1[0] + t_size[0], c1[1] - t_size[1]
         cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled

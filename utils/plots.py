@@ -99,8 +99,8 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=3):
         tf = max(tl - 1, 1)  # font thickness
         font_size = max(15, int(tl * 2))  # 增加字体大小，最小值为15
         font = ImageFont.truetype("SimHei.ttf", font_size, encoding="utf-8")
-        text_size = font.getsize(label)
-        text_width, text_height = text_size
+        text_size = font.getbbox(label)
+        text_width, text_height = text_size[2] - text_size[0], text_size[3] - text_size[1]
         # Background rectangle
         background_c2 = c1[0] + text_width, c1[1] - text_height - 3  # Adding some padding
         cv2.rectangle(img, c1, background_c2, color, -1, cv2.LINE_AA)  # filled rectangle for background

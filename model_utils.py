@@ -15,20 +15,10 @@ def get_gpu_memory():
     return gpu_memory[0]
 
 def color_picker_fn(classname, key):
-    # color_picke = st.sidebar.color_picker(f'{classname}:', '#ff0003', key=key)
-    color_picke = '#ff0003'
+    color_picke = st.sidebar.color_picker(f'{classname}:', '#ff0003', key=key)
     color_rgb_list = list(ImageColor.getcolor(str(color_picke), "RGB"))
     color = [color_rgb_list[2], color_rgb_list[1], color_rgb_list[0]]
     return color
-
-# 定义全局变量来存储颜色值
-# GLOBAL_COLOR = '#ff0003'  # 你可以在这里设置你想要的默认颜色
-
-# def get_global_color():
-#     # 将全局颜色值转换为RGB格式
-#     color_rgb_list = list(ImageColor.getcolor(GLOBAL_COLOR, "RGB"))
-#     color = [color_rgb_list[2], color_rgb_list[1], color_rgb_list[0]]
-#     return color
 
 
 def get_yolo(img, model_type, model, confidence, color_pick_list, class_list, draw_thick):
@@ -41,8 +31,10 @@ def get_yolo(img, model_type, model, confidence, color_pick_list, class_list, dr
             xmin, ymin, xmax, ymax, conf, id, class_name = int(box['xmin'][i]), int(box['ymin'][i]), int(box['xmax'][i]), \
                 int(box['ymax'][i]), box['confidence'][i], box['class'][i], box['name'][i]
             if conf > confidence:
-                plot_one_box([xmin, ymin, xmax, ymax], img, label=class_name,
-                                color=color_pick_list[id], line_thickness=draw_thick)
+                # plot_one_box([xmin, ymin, xmax, ymax], img, label=class_name,
+                #                 color=color_pick_list[id], line_thickness=draw_thick)
+                img = plot_one_box([xmin, ymin, xmax, ymax], img, label=class_name,
+                             color=color_pick_list[id], line_thickness=draw_thick)
             current_no_class.append([class_name])
 
     # if model_type == 'YOLOv8':

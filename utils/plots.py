@@ -89,28 +89,33 @@ def butter_lowpass_filtfilt(data, cutoff=1500, fs=50000, order=5):
 #         # cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
 #         return cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
 
+# 确保你已经定义了中文字体路径和字体大小
+font_path = "SimHei.ttf"  # 替换为你的中文字体路径
+font_size = 30  # 根据需要调整字体大小
+font = ImageFont.truetype(font_path, font_size, encoding="utf-8")
+
 def plot_one_box(x, img, color=None, label=None, line_thickness=3):
+    # 确保color是RGB格式的元组
+    if isinstance(color, list) and len(color) == 3:
+        color = tuple(color)
+    # 默认颜色为随机颜色
+    color = color or (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
     # 将OpenCV图像转换为PIL图像
     pil_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    # 确定绘制颜色，如果没有指定，则随机生成一个颜色
-    color = color or (random.randint(0, 255) for _ in range(3))
+    # 创建ImageDraw对象
+    draw = ImageDraw.Draw(pil_img)
     # 计算文本大小并确定绘制的坐标
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
     text_width, text_height = draw.textsize(label, font=font)
     # 绘制边界框
-    draw.rectangle([c1, (c1[0], c1[1] - text_height - 1)], c2, outline=color, width=line_thickness)
+    draw.rectangle([c1, (c1[0] + text_width, c1[1] - text_height - 1)], outline=color, width=line_thickness)
     # 绘制文本背景
-    text_background_position = (c1[0], c1[1] - text_height - 1)
-    draw.rectangle([text_background_position, (text_background_position[0] + text_width, c1[1])], fill=color)
+    draw.rectangle([c1, (c1[0] + text_width, c1[1])], fill=color)
     # 绘制文本
-    draw.text((c1[0], c1[1] - text_height - 1), label, font=font, fill="white")
+    draw.text((c1[0], c1[1] - text_height - 5), label, font=font, fill=(255, 255, 255))
     # 将PIL图像转换回OpenCV图像
     cv_img = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
     return cv_img
-# 使用自定义中文字体
-font_path = "SimHei.ttf"  # 替换为你的中文字体路径
-font_size = 30  # 根据需要调整字体大小
-font = ImageFont.truetype(font_path, font_size, encoding="utf-8")
 
 
 def plot_one_box_PIL(box, img, color=None, label=None, line_thickness=None):

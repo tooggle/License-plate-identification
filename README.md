@@ -1,7 +1,6 @@
  ## StepUp
 ```
-git clone https://github.com/naseemap47/streamlit-yolo.git
-cd streamlit-yolo
+git clone https://github.com/tooggle/License-plate-identification.git
 ```
 Install dependency
 ```

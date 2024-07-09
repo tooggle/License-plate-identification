@@ -84,7 +84,7 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=3):
         cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
         img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         draw = ImageDraw.Draw(img)
-        draw.text((c1[0], c2[1]), label, fill = (255, 255, 255), font=font)
+        draw.text((c1[0], c2[1]), label, fill = (155, 155, 155), font=font)
 
         # cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
         return cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)

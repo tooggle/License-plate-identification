@@ -182,8 +182,8 @@ if st.sidebar.checkbox('Load Model'):
                     prev_frame = gray_frame
                 img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
                 FRAME_WINDOW.image(img, channels='BGR')
-                # if extract_key_frames:
-                #     st.write(f'Extracted {len(key_frames)} key frames.')
+                if extract_key_frames:
+                    st.write(f'Extracted {len(key_frames)} key frames.')
                 #     for i, frame in enumerate(key_frames):
                 #         st.image(frame, caption=f'Key Frame {i+1}', channels='BGR')
                 if not success:

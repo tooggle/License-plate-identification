@@ -140,15 +140,60 @@ if st.sidebar.checkbox('Load Model'):
                     st.dataframe(df_fq, use_container_width=True)
         
     # Video
-    if options == 'Video':
-        upload_video_file = st.sidebar.file_uploader(
-            'Upload Video', type=['mp4', 'avi', 'mkv'])
-        if upload_video_file is not None:
-            pred = st.checkbox(f'Predict Using {model_type}')
-            tfile = tempfile.NamedTemporaryFile(delete=False)
-            tfile.write(upload_video_file.read())
-            cap = cv2.VideoCapture(tfile.name)
-            # if pred:
+    # if options == 'Video':
+    #     upload_video_file = st.sidebar.file_uploader(
+    #         'Upload Video', type=['mp4', 'avi', 'mkv'])
+    #     if upload_video_file is not None:
+    #         pred = st.checkbox(f'Predict Using {model_type}')
+    #         tfile = tempfile.NamedTemporaryFile(delete=False)
+    #         tfile.write(upload_video_file.read())
+    #         cap = cv2.VideoCapture(tfile.name)
+    #         # if pred:
+
+
+
+def is_key_frame(prev_frame, curr_frame, threshold=30):
+    diff = cv2.absdiff(prev_frame, curr_frame)
+    non_zero_count = np.count_nonzero(diff)
+    return non_zero_count > threshold
+
+# 原有的代码
+if options == 'Video':
+    upload_video_file = st.sidebar.file_uploader(
+        'Upload Video', type=['mp4', 'avi', 'mkv'])
+    if upload_video_file is not None:
+        pred = st.checkbox(f'Predict Using {model_type}')
+        extract_key_frames = st.checkbox('Extract Key Frames')  # 新增的关键帧提取选项
+        key_frames = []  # 存储关键帧的列表
+        tfile = tempfile.NamedTemporaryFile(delete=False)
+        tfile.write(upload_video_file.read())
+        cap = cv2.VideoCapture(tfile.name)
+        if (cap != None) and pred:
+            stframe1 = st.empty()
+            stframe2 = st.empty()
+            stframe3 = st.empty()
+            prev_frame = None
+            while True:
+                success, img = cap.read()
+                if not success:
+                    st.error(
+                        f"{options} NOT working\nCheck {options} properly!!",
+                        icon="🚨"
+                    )
+                    break
+                if extract_key_frames:
+                    gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                    if prev_frame is not None and is_key_frame(prev_frame, gray_frame):
+                        key_frames.append(img)
+                    prev_frame = gray_frame
+                img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
+                FRAME_WINDOW.image(img, channels='BGR')
+            if extract_key_frames:
+                st.write(f'Extracted {len(key_frames)} key frames.')
+                for i, frame in enumerate(key_frames):
+                    st.image(frame, caption=f'Key Frame {i+1}', channels='BGR')
+
+
     # Web-cam
     #     if options == 'Webcam':
     #         cam_options = st.sidebar.selectbox('Webcam Channel',
@@ -165,20 +210,20 @@ if st.sidebar.checkbox('Load Model'):
         #     )
         #     pred = st.checkbox(f'Predict Using {model_type}')
         #     cap = cv2.VideoCapture(rtsp_url)
-if (cap != None) and pred:
-    stframe1 = st.empty()
-    stframe2 = st.empty()
-    stframe3 = st.empty()
-    while True:
-        success, img = cap.read()
-        if not success:
-            st.error(
-                f"{options} NOT working\nCheck {options} properly!!",
-                icon="🚨"
-            )
-            break
-        img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
-        FRAME_WINDOW.image(img, channels='BGR')
+# if (cap != None) and pred:
+#     stframe1 = st.empty()
+#     stframe2 = st.empty()
+#     stframe3 = st.empty()
+#     while True:
+#         success, img = cap.read()
+#         if not success:
+#             st.error(
+#                 f"{options} NOT working\nCheck {options} properly!!",
+#                 icon="🚨"
+#             )
+#             break
+#         img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
+#         FRAME_WINDOW.image(img, channels='BGR')
         # FPS
         c_time = time.time()
         fps = 1 / (c_time - p_time)

@@ -190,8 +190,8 @@ if st.sidebar.checkbox('Load Model'):
                     FRAME_WINDOW.image(img, channels='BGR')
                 if extract_key_frames:
                     st.write(f'Extracted {len(key_frames)} key frames.')
-                    for i, frame in enumerate(key_frames):
-                        st.image(frame, caption=f'Key Frame {i+1}', channels='BGR')
+                #     for i, frame in enumerate(key_frames):
+                #         st.image(frame, caption=f'Key Frame {i+1}', channels='BGR')
 
 
     # Web-cam

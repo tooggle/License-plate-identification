@@ -172,7 +172,7 @@ if st.sidebar.checkbox('Load Model'):
             stframe1 = st.empty()
             stframe2 = st.empty()
             stframe3 = st.empty()
-            # prev_frame = None
+            prev_frame = None
             while True:
                 success, img = cap.read()
                 if extract_key_frames:

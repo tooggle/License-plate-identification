@@ -152,7 +152,7 @@ if st.sidebar.checkbox('Load Model'):
 
 
 
-def is_key_frame(prev_frame, curr_frame, threshold=30):
+def is_key_frame(prev_frame, curr_frame, threshold=50):
     diff = cv2.absdiff(prev_frame, curr_frame)
     non_zero_count = np.count_nonzero(diff)
     return non_zero_count > threshold

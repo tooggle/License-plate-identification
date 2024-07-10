@@ -168,30 +168,30 @@ if st.sidebar.checkbox('Load Model'):
             tfile = tempfile.NamedTemporaryFile(delete=False)
             tfile.write(upload_video_file.read())
             cap = cv2.VideoCapture(tfile.name)
-            if (cap != None) and pred:
-                stframe1 = st.empty()
-                stframe2 = st.empty()
-                stframe3 = st.empty()
-                prev_frame = None
-                while True:
-                    success, img = cap.read()
-                    if not success:
-                        st.error(
-                            f"{options} NOT working\nCheck {options} properly!!",
-                            icon="🚨"
-                        )
-                        break
-                    if extract_key_frames:
-                        gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                        if prev_frame is not None and is_key_frame(prev_frame, gray_frame):
-                            key_frames.append(img)
-                        prev_frame = gray_frame
-                    img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
-                    FRAME_WINDOW.image(img, channels='BGR')
+        if (cap != None) and pred:
+            stframe1 = st.empty()
+            stframe2 = st.empty()
+            stframe3 = st.empty()
+            # prev_frame = None
+            while True:
+                success, img = cap.read()
+                if extract_key_frames:
+                    gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                    if prev_frame is not None and is_key_frame(prev_frame, gray_frame):
+                        key_frames.append(img)
+                    prev_frame = gray_frame
+                img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
+                FRAME_WINDOW.image(img, channels='BGR')
                 if extract_key_frames:
                     st.write(f'Extracted {len(key_frames)} key frames.')
                 #     for i, frame in enumerate(key_frames):
                 #         st.image(frame, caption=f'Key Frame {i+1}', channels='BGR')
+                if not success:
+                    st.error(
+                        f"{options} NOT working\nCheck {options} properly!!",
+                        icon="🚨"
+                    )
+                    break
 
 
     # Web-cam

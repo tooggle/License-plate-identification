@@ -242,6 +242,11 @@ if st.sidebar.checkbox('Load Model'):
                         icon="🚨"
                     )
                     break
+                st.image(img, channels="BGR", use_column_width=True)
+
+                # 退出循环的条件，例如按下停止按钮
+                if st.button("Stop"):
+                    break
                 img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels,
                                                  draw_thick)
                 FRAME_WINDOW.image(img, channels='BGR')

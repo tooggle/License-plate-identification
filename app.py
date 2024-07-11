@@ -157,6 +157,11 @@ if st.sidebar.checkbox('Load Model'):
         non_zero_count = np.count_nonzero(diff)
         return non_zero_count > threshold
 
+    def is_key_frame(prev_frame, curr_frame, threshold=300000):
+        diff = cv2.absdiff(prev_frame, curr_frame)
+        non_zero_count = np.count_nonzero(diff)
+        return non_zero_count > threshold
+
     # 原有的代码
     if options == 'Video':
         upload_video_file = st.sidebar.file_uploader(
@@ -168,7 +173,7 @@ if st.sidebar.checkbox('Load Model'):
             tfile = tempfile.NamedTemporaryFile(delete=False)
             tfile.write(upload_video_file.read())
             cap = cv2.VideoCapture(tfile.name)
-        if (cap != None) and pred:
+        if (cap is not None) and pred:
             stframe1 = st.empty()
             stframe2 = st.empty()
             stframe3 = st.empty()
@@ -188,8 +193,21 @@ if st.sidebar.checkbox('Load Model'):
                     prev_frame = gray_frame
                 img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
                 FRAME_WINDOW.image(img, channels='BGR')
-                
 
+                # 检查 current_no_class 是否存在
+                if current_no_class:
+                    class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
+                    class_fq = json.dumps(class_fq, indent=4)
+                    class_fq = json.loads(class_fq)
+                    df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
+
+                    # 更新推理结果
+                    get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
+
+                # 计算FPS
+                c_time = time.time()
+                fps = 1 / (c_time - p_time)
+                p_time = c_time
 
             # if extract_key_frames:
             #     st.write(f'Extracted {len(key_frames)} key frames.')
@@ -227,16 +245,16 @@ if st.sidebar.checkbox('Load Model'):
 #         img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
 #         FRAME_WINDOW.image(img, channels='BGR')
         # FPS
-        c_time = time.time()
-        fps = 1 / (c_time - p_time)
-        p_time = c_time
+        # c_time = time.time()
+        # fps = 1 / (c_time - p_time)
+        # p_time = c_time
         
-        # 检查 current_no_class 是否存在
-        if current_no_class:
-            class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
-            class_fq = json.dumps(class_fq, indent=4)
-            class_fq = json.loads(class_fq)
-            df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
+        # # 检查 current_no_class 是否存在
+        # if current_no_class:
+        #     class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
+        #     class_fq = json.dumps(class_fq, indent=4)
+        #     class_fq = json.loads(class_fq)
+        #     df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
         
-        # Updating Inference results
-        get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
+        # # Updating Inference results
+        # get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)

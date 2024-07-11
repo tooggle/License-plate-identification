@@ -32,7 +32,7 @@ seaborn>=0.11.0
 # openvino-dev  # OpenVINO export
 
 # Extras --------------------------------------
-ipython  # interactive notebook
+ipython==8.15.0  # interactive notebook
 psutil  # system utilization
 thop  # FLOPs computation
 # albumentations>=1.0.3

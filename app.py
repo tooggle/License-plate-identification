@@ -216,10 +216,7 @@ if st.sidebar.checkbox('Load Model'):
             #     for i, frame in enumerate(key_frames):
             #         st.image(frame, caption=f'Key Frame {i+1}', channels='BGR')
 
-    Web-cam
-        if options == 'Webcam':
-            cam_options = st.sidebar.selectbox('Webcam Channel',
-                                            ('Select Channel', '0', '1', '2', '3'))
+
          #Web-cam
     if options == 'Webcam':
         cam_options = st.sidebar.selectbox('Webcam Channel',

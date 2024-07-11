@@ -158,49 +158,17 @@ if st.sidebar.checkbox('Load Model'):
         return non_zero_count > threshold
 
     # 原有的代码
-    # if options == 'Video':
-    #     upload_video_file = st.sidebar.file_uploader(
-    #         'Upload Video', type=['mp4', 'avi', 'mkv'])
-    #     if upload_video_file is not None:
-    #         pred = st.checkbox(f'Predict Using {model_type}')
-    #         extract_key_frames = st.checkbox('Extract Key Frames')  # 新增的关键帧提取选项
-    #         key_frames = []  # 存储关键帧的列表
-    #         tfile = tempfile.NamedTemporaryFile(delete=False)
-    #         tfile.write(upload_video_file.read())
-    #         cap = cv2.VideoCapture(tfile.name)
-    #     if (cap != None) and pred:
-    #         stframe1 = st.empty()
-    #         stframe2 = st.empty()
-    #         stframe3 = st.empty()
-    #         prev_frame = None
-    #         while True:
-    #             success, img = cap.read()
-    #             if not success:
-    #                 st.error(
-    #                     f"{options} NOT working\nCheck {options} properly!!",
-    #                     icon="🚨"
-    #                 )
-    #                 break
-    #             if extract_key_frames:
-    #                 gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if img is not None else None
-    #                 if prev_frame is not None and gray_frame is not None and is_key_frame(prev_frame, gray_frame):
-    #                     key_frames.append(img)
-    #                 prev_frame = gray_frame
-    #             img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
-    #             FRAME_WINDOW.image(img, channels='BGR')
-
-
-      if options == '视频':
+    if options == 'Video':
         upload_video_file = st.sidebar.file_uploader(
-            '上传视频', type=['mp4', 'avi', 'mkv'])
+            'Upload Video', type=['mp4', 'avi', 'mkv'])
         if upload_video_file is not None:
-            pred = st.checkbox(f'使用{model_type}预测')
-            extract_key_frames = st.checkbox('提取关键帧')  # 新增的关键帧提取选项
+            pred = st.checkbox(f'Predict Using {model_type}')
+            extract_key_frames = st.checkbox('Extract Key Frames')  # 新增的关键帧提取选项
             key_frames = []  # 存储关键帧的列表
             tfile = tempfile.NamedTemporaryFile(delete=False)
             tfile.write(upload_video_file.read())
             cap = cv2.VideoCapture(tfile.name)
-        if (cap is not None) and pred:
+        if (cap != None) and pred:
             stframe1 = st.empty()
             stframe2 = st.empty()
             stframe3 = st.empty()
@@ -209,7 +177,7 @@ if st.sidebar.checkbox('Load Model'):
                 success, img = cap.read()
                 if not success:
                     st.error(
-                        f"{options}不工作\n请检查{options}是否正确!!",
+                        f"{options} NOT working\nCheck {options} properly!!",
                         icon="🚨"
                     )
                     break
@@ -220,16 +188,12 @@ if st.sidebar.checkbox('Load Model'):
                     prev_frame = gray_frame
                 img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
                 FRAME_WINDOW.image(img, channels='BGR')
-            
-                # 检查 current_no_class 是否存在
                 if current_no_class:
                     class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
                     class_fq = json.dumps(class_fq, indent=4)
                     class_fq = json.loads(class_fq)
-                    df_fq = pd.DataFrame(class_fq.items(), columns=['类别', '数量'])
+                    df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
 
-                # 更新推理结果
-                get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
 
             # if extract_key_frames:
             #     st.write(f'Extracted {len(key_frames)} key frames.')

@@ -217,10 +217,10 @@ if st.sidebar.checkbox('Load Model'):
             #         st.image(frame, caption=f'Key Frame {i+1}', channels='BGR')
 
 
-         #Web-cam
+       # Web-cam
     if options == 'Webcam':
         cam_options = st.sidebar.selectbox('Webcam Channel',
-                                           ('Select Channel', '0', '1', '2', '3'))  
+                                           ('Select Channel', '0', '1', '2', '3'))
         if not cam_options == 'Select Channel':
             pred = st.checkbox(f'Predict Using {model_type}')
             cap = cv2.VideoCapture(int(cam_options))
@@ -229,11 +229,42 @@ if st.sidebar.checkbox('Load Model'):
             else:
                 st.success(f"Webcam channel {cam_options} opened successfully.")
         else:
-             st.info("Please select a webcam channel.")
-    #
-    #         if not cam_options == 'Select Channel':
-    #             pred = st.checkbox(f'Predict Using {model_type}')
-    #             cap = cv2.VideoCapture(int(cam_options))
+            st.info("Please select a webcam channel.")
+        if (cap is not None) and pred:
+            stframe1 = st.empty()
+            stframe2 = st.empty()
+            stframe3 = st.empty()
+            while True:
+                success, img = cap.read()
+                if not success:
+                    st.error(
+                        f"{options} NOT working\nCheck {options} properly!!",
+                        icon="🚨"
+                    )
+                    break
+                img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels,
+                                                 draw_thick)
+                FRAME_WINDOW.image(img, channels='BGR')
+
+                # 检查 current_no_class 是否存在
+                if current_no_class:
+                    class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
+                    class_fq = json.dumps(class_fq, indent=4)
+                    class_fq = json.loads(class_fq)
+                    df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
+                    if not df_fq.empty:
+                        # 计算FPS
+                        c_time = time.time()
+                        fps = 1 / (c_time - p_time)
+                        p_time = c_time
+
+                        # 更新推理结果
+                        get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
+                    else:
+                        st.error(
+                            f"No plates detected",
+                            icon="🚨"
+                        )
         # RTSP
         # if options == 'RTSP':
         #     rtsp_url = st.sidebar.text_input(
@@ -242,31 +273,31 @@ if st.sidebar.checkbox('Load Model'):
         #     )
         #     pred = st.checkbox(f'Predict Using {model_type}')
         #     cap = cv2.VideoCapture(rtsp_url)
-if (cap != None) and pred:
-    stframe1 = st.empty()
-    stframe2 = st.empty()
-    stframe3 = st.empty()
-    while True:
-        success, img = cap.read()
-        if not success:
-            st.error(
-                f"{options} NOT working\nCheck {options} properly!!",
-                icon="🚨"
-            )
-            break
-        img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
-        FRAME_WINDOW.image(img, channels='BGR')
-        # FPS
-        # c_time = time.time()
-        # fps = 1 / (c_time - p_time)
-        # p_time = c_time
-        
-        # # 检查 current_no_class 是否存在
-        # if current_no_class:
-        #     class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
-        #     class_fq = json.dumps(class_fq, indent=4)
-        #     class_fq = json.loads(class_fq)
-        #     df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
-        
-        # # Updating Inference results
-        # get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
+# if (cap != None) and pred:
+#     stframe1 = st.empty()
+#     stframe2 = st.empty()
+#     stframe3 = st.empty()
+#     while True:
+#         success, img = cap.read()
+#         if not success:
+#             st.error(
+#                 f"{options} NOT working\nCheck {options} properly!!",
+#                 icon="🚨"
+#             )
+#             break
+#         img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
+#         FRAME_WINDOW.image(img, channels='BGR')
+#         FPS
+#         c_time = time.time()
+#         fps = 1 / (c_time - p_time)
+#         p_time = c_time
+
+#         # 检查 current_no_class 是否存在
+#         if current_no_class:
+#             class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
+#             class_fq = json.dumps(class_fq, indent=4)
+#             class_fq = json.loads(class_fq)
+#             df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
+
+#         # Updating Inference results
+#         get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)

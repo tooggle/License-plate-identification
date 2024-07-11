@@ -237,7 +237,7 @@ def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max
                     plate_boxes *= scale_factor
                 plate_boxes[[0, 2]] += block_x
                 plate_boxes[[1, 3]] += block_y
-        绘制每个“plate”框
+        # 绘制每个“plate”框
             for plate_box in plate_boxes.T:
                 cv2.rectangle(mosaic, (int(plate_box[0]), int(plate_box[1])), (int(plate_box[2]), int(plate_box[3])), (0, 255, 0), thickness=tl)
                     

@@ -188,11 +188,15 @@ if st.sidebar.checkbox('Load Model'):
                     prev_frame = gray_frame
                 img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
                 FRAME_WINDOW.image(img, channels='BGR')
+                # 检查 current_no_class 是否存在
                 if current_no_class:
                     class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
                     class_fq = json.dumps(class_fq, indent=4)
                     class_fq = json.loads(class_fq)
                     df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
+
+                    # 更新推理结果
+                    get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
 
 
             # if extract_key_frames:

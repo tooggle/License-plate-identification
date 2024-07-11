@@ -79,7 +79,7 @@ if st.sidebar.checkbox('Load Model'):
 
     # Inference Mode
     options = st.sidebar.radio(
-        'Options:', ('Image', 'Video'), index=0)
+        'Options:', ('Image', 'Video','Webcam'), index=0)
 
     # Confidence
     confidence = st.sidebar.slider(
@@ -216,10 +216,21 @@ if st.sidebar.checkbox('Load Model'):
             #     for i, frame in enumerate(key_frames):
             #         st.image(frame, caption=f'Key Frame {i+1}', channels='BGR')
 
-    # Web-cam
-    #     if options == 'Webcam':
-    #         cam_options = st.sidebar.selectbox('Webcam Channel',
-    #                                         ('Select Channel', '0', '1', '2', '3'))
+    Web-cam
+        if options == 'Webcam':
+            cam_options = st.sidebar.selectbox('Webcam Channel',
+                                            ('Select Channel', '0', '1', '2', '3'))
+         #Web-cam
+    if options == 'Webcam':
+        cam_options = st.sidebar.selectbox('Webcam Channel',
+                                           ('Select Channel', '0', '1', '2', '3'))  
+        if not cam_options == 'Select Channel':
+            pred = st.checkbox(f'Predict Using {model_type}')
+            cap = cv2.VideoCapture(int(cam_options))
+            if not cap.isOpened():
+                st.error("Error: Could not open webcam.")
+            else:
+                st.success(f"Webcam channel {cam_options} opened successfully.")
     #
     #         if not cam_options == 'Select Channel':
     #             pred = st.checkbox(f'Predict Using {model_type}')
@@ -232,20 +243,20 @@ if st.sidebar.checkbox('Load Model'):
         #     )
         #     pred = st.checkbox(f'Predict Using {model_type}')
         #     cap = cv2.VideoCapture(rtsp_url)
-# if (cap != None) and pred:
-#     stframe1 = st.empty()
-#     stframe2 = st.empty()
-#     stframe3 = st.empty()
-#     while True:
-#         success, img = cap.read()
-#         if not success:
-#             st.error(
-#                 f"{options} NOT working\nCheck {options} properly!!",
-#                 icon="🚨"
-#             )
-#             break
-#         img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
-#         FRAME_WINDOW.image(img, channels='BGR')
+if (cap != None) and pred:
+    stframe1 = st.empty()
+    stframe2 = st.empty()
+    stframe3 = st.empty()
+    while True:
+        success, img = cap.read()
+        if not success:
+            st.error(
+                f"{options} NOT working\nCheck {options} properly!!",
+                icon="🚨"
+            )
+            break
+        img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
+        FRAME_WINDOW.image(img, channels='BGR')
         # FPS
         # c_time = time.time()
         # fps = 1 / (c_time - p_time)

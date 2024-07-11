@@ -228,6 +228,8 @@ if st.sidebar.checkbox('Load Model'):
                 st.error("Error: Could not open webcam.")
             else:
                 st.success(f"Webcam channel {cam_options} opened successfully.")
+        else:
+             st.info("Please select a webcam channel.")
     #
     #         if not cam_options == 'Select Channel':
     #             pred = st.checkbox(f'Predict Using {model_type}')

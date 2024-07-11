@@ -1,7 +1,9 @@
  ## StepUp
 ```
 git clone https://github.com/tooggle/License-plate-identification.git
+create conda env
 ```
+conda create -n yolov7
 Install dependency
 ```
 pip3 install -r requirements.txt

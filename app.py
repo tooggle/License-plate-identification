@@ -157,11 +157,6 @@ if st.sidebar.checkbox('Load Model'):
         non_zero_count = np.count_nonzero(diff)
         return non_zero_count > threshold
 
-    def is_key_frame(prev_frame, curr_frame, threshold=300000):
-        diff = cv2.absdiff(prev_frame, curr_frame)
-        non_zero_count = np.count_nonzero(diff)
-        return non_zero_count > threshold
-
     # 原有的代码
     if options == 'Video':
         upload_video_file = st.sidebar.file_uploader(

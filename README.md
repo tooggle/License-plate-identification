@@ -6,6 +6,10 @@ create conda env
 ```
 conda create -n yolov7
 ```
+Enter the environment
+```
+conda activate yolov7
+```
 Install dependency
 ```
 pip3 install -r requirements.txt

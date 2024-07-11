@@ -201,13 +201,15 @@ if st.sidebar.checkbox('Load Model'):
                     class_fq = json.loads(class_fq)
                     df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
 
-                    # 更新推理结果
-                    get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
-
+                    
                 # 计算FPS
                 c_time = time.time()
                 fps = 1 / (c_time - p_time)
                 p_time = c_time
+
+                # 更新推理结果
+                get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
+
 
             # if extract_key_frames:
             #     st.write(f'Extracted {len(key_frames)} key frames.')

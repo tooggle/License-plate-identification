@@ -188,7 +188,7 @@ def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max
 
     colors = color_list()  # list of colors
     mosaic = np.full((int(ns * h), int(ns * w), 3), 255, dtype=np.uint8)  # init
-    plate_class_id = 0  # “plate”的类别ID为0
+    # plate_class_id = 0  # “plate”的类别ID为0
     for i, img in enumerate(images):
         if i == max_subplots:  # if last batch has fewer images than we expect
             break
@@ -202,54 +202,54 @@ def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max
 
         mosaic[block_y:block_y + h, block_x:block_x + w, :] = img
         if len(targets) > 0:
-            # image_targets = targets[targets[:, 0] == i]
-            # boxes = xywh2xyxy(image_targets[:, 2:6]).T
-            # classes = image_targets[:, 1].astype('int')
-            # labels = image_targets.shape[1] == 6  # labels if no conf column
-            # conf = None if labels else image_targets[:, 6]  # check for confidence presence (label vs pred)
             image_targets = targets[targets[:, 0] == i]
-            plate_targets = image_targets[image_targets[:, 1] == plate_class_id]  # 获取所有“plate”框
-            other_targets = image_targets[image_targets[:, 1] != plate_class_id]  # 获取其他类别的目标
+            boxes = xywh2xyxy(image_targets[:, 2:6]).T
+            classes = image_targets[:, 1].astype('int')
+            labels = image_targets.shape[1] == 6  # labels if no conf column
+            conf = None if labels else image_targets[:, 6]  # check for confidence presence (label vs pred)
+            # image_targets = targets[targets[:, 0] == i]
+            # plate_targets = image_targets[image_targets[:, 1] == plate_class_id]  # 获取所有“plate”框
+            # other_targets = image_targets[image_targets[:, 1] != plate_class_id]  # 获取其他类别的目标
 
-            # if boxes.shape[1]:
-            #     if boxes.max() <= 1.01:  # if normalized with tolerance 0.01
-            #         boxes[[0, 2]] *= w  # scale to pixels
-            #         boxes[[1, 3]] *= h
-            #     elif scale_factor < 1:  # absolute coords need scale if image scales
-            #         boxes *= scale_factor
-            # boxes[[0, 2]] += block_x
-            # boxes[[1, 3]] += block_y
-            # for j, box in enumerate(boxes.T):
-            #     cls = int(classes[j])
-            #     color = colors[cls % len(colors)]
-            #     cls = names[cls] if names else cls
-            #     if labels or conf[j] > 0.25:  # 0.25 conf thresh
-            #         label = '%s' % cls if labels else '%s %.1f' % (cls, conf[j])
-            #         # plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
-            #         mosaic = plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
+            if boxes.shape[1]:
+                if boxes.max() <= 1.01:  # if normalized with tolerance 0.01
+                    boxes[[0, 2]] *= w  # scale to pixels
+                    boxes[[1, 3]] *= h
+                elif scale_factor < 1:  # absolute coords need scale if image scales
+                    boxes *= scale_factor
+            boxes[[0, 2]] += block_x
+            boxes[[1, 3]] += block_y
+            for j, box in enumerate(boxes.T):
+                cls = int(classes[j])
+                color = colors[cls % len(colors)]
+                cls = names[cls] if names else cls
+                if labels or conf[j] > 0.25:  # 0.25 conf thresh
+                    label = '%s' % cls if labels else '%s %.1f' % (cls, conf[j])
+                    # plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
+                    mosaic = plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
         # 绘制每个“plate”框
-            for plate_box in plate_boxes.T:
-                cv2.rectangle(mosaic, (int(plate_box[0]), int(plate_box[1])), (int(plate_box[2]), int(plate_box[3])), (0, 255, 0), thickness=tl)
+            # for plate_box in plate_boxes.T:
+            #     cv2.rectangle(mosaic, (int(plate_box[0]), int(plate_box[1])), (int(plate_box[2]), int(plate_box[3])), (0, 255, 0), thickness=tl)
                     
-                # 在“plate”框内筛选其他类别的目标
-                for other_target in other_targets:
-                    box = xywh2xyxy(other_target[2:6])
-                    if box.max() <= 1.01:  # 如果归一化（容差0.01）
-                        box[[0, 2]] *= w  # 缩放到像素
-                        box[[1, 3]] *= h
-                    elif scale_factor < 1:  # 如果图像缩放，绝对坐标需要缩放
-                        box *= scale_factor
-                    box[[0, 2]] += block_x
-                    box[[1, 3]] += block_y
+            #     # 在“plate”框内筛选其他类别的目标
+            #     for other_target in other_targets:
+            #         box = xywh2xyxy(other_target[2:6])
+            #         if box.max() <= 1.01:  # 如果归一化（容差0.01）
+            #             box[[0, 2]] *= w  # 缩放到像素
+            #             box[[1, 3]] *= h
+            #         elif scale_factor < 1:  # 如果图像缩放，绝对坐标需要缩放
+            #             box *= scale_factor
+            #         box[[0, 2]] += block_x
+            #         box[[1, 3]] += block_y
 
-                    # 判断目标框是否在“plate”框内
-                    if box_in_box(box, plate_box):
-                        cls = int(other_target[1])
-                        color = colors[cls % len(colors)]
-                        cls = names[cls] if names else cls
-                        conf = other_target[6] if other_target.shape[0] == 7 else None
-                        label = '%s' % cls if conf is None else '%s %.1f' % (cls, conf)
-                        mosaic = plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
+            #         # 判断目标框是否在“plate”框内
+            #         if box_in_box(box, plate_box):
+            #             cls = int(other_target[1])
+            #             color = colors[cls % len(colors)]
+            #             cls = names[cls] if names else cls
+            #             conf = other_target[6] if other_target.shape[0] == 7 else None
+            #             label = '%s' % cls if conf is None else '%s %.1f' % (cls, conf)
+            #             mosaic = plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
 
 
         # Draw image filename labels
@@ -269,9 +269,9 @@ def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max
         Image.fromarray(mosaic).save(fname)  # PIL save
     return mosaic
 
-def box_in_box(box, plate_box):
-    # 判断目标框是否在“plate”框内
-    return box[0] >= plate_box[0] and box[1] >= plate_box[1] and box[2] <= plate_box[2] and box[3] <= plate_box[3]
+# def box_in_box(box, plate_box):
+#     # 判断目标框是否在“plate”框内
+#     return box[0] >= plate_box[0] and box[1] >= plate_box[1] and box[2] <= plate_box[2] and box[3] <= plate_box[3]
 
 
 def plot_lr_scheduler(optimizer, scheduler, epochs=300, save_dir=''):

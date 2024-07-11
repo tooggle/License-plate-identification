@@ -212,7 +212,7 @@ if st.sidebar.checkbox('Load Model'):
             #         st.image(frame, caption=f'Key Frame {i+1}', channels='BGR')
 
 
-       # Web-cam
+    # Web-cam
     if options == 'Webcam':
         cam_options = st.sidebar.selectbox('Webcam Channel',
                                            ('Select Channel', '0', '1', '2', '3'))
@@ -225,6 +225,7 @@ if st.sidebar.checkbox('Load Model'):
                 st.success(f"Webcam channel {cam_options} opened successfully.")
         else:
             st.info("Please select a webcam channel.")
+        stop_button = st.button("Stop", key="stop_button")
         if (cap is not None) and pred:
             stframe1 = st.empty()
             stframe2 = st.empty()
@@ -237,15 +238,14 @@ if st.sidebar.checkbox('Load Model'):
                         icon="🚨"
                     )
                     break
-                st.image(img, channels="BGR", use_column_width=True)
+                #st.image(img, channels="BGR", use_column_width=True)
 
-                # 退出循环的条件，例如按下停止按钮
-                if st.button("Stop"):
-                    break
                 img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels,
                                                  draw_thick)
                 FRAME_WINDOW.image(img, channels='BGR')
-
+                if stop_button:
+                    capture_frame = img.copy()  # 复制当前帧以在停止后显示
+                    break
                 # 检查 current_no_class 是否存在
                 if current_no_class:
                     class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
@@ -257,14 +257,12 @@ if st.sidebar.checkbox('Load Model'):
                         c_time = time.time()
                         fps = 1 / (c_time - p_time)
                         p_time = c_time
-
-                        # 更新推理结果
-                        get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
                     else:
                         st.error(
                             f"No plates detected",
                             icon="🚨"
                         )
+                    get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
         # RTSP
         # if options == 'RTSP':
         #     rtsp_url = st.sidebar.text_input(

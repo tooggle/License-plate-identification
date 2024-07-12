@@ -173,6 +173,8 @@ if st.sidebar.checkbox('Load Model'):
             stframe2 = st.empty()
             stframe3 = st.empty()
             prev_frame = None
+            frame_count = 0  # 帧计数器
+            process_every_n_frames = 10  # 每隔 n 帧处理一次
             while True:
                 success, img = cap.read()
                 if not success:
@@ -181,29 +183,31 @@ if st.sidebar.checkbox('Load Model'):
                         icon="🚨"
                     )
                     break
+                frame_count += 1
                 if extract_key_frames:
                     gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if img is not None else None
                     if prev_frame is not None and gray_frame is not None and is_key_frame(prev_frame, gray_frame):
                         key_frames.append(img)
                     prev_frame = gray_frame
-                img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
-                FRAME_WINDOW.image(img, channels='BGR')
+                if frame_count % process_every_n_frames == 0:
+                    img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels,
+                                                     draw_thick)
+                    FRAME_WINDOW.image(img, channels='BGR')
 
                 # 检查 current_no_class 是否存在
-                if current_no_class:
-                    class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
-                    class_fq = json.dumps(class_fq, indent=4)
-                    class_fq = json.loads(class_fq)
-                    df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
+                    if current_no_class:
+                        class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
+                        class_fq = json.dumps(class_fq, indent=4)
+                        class_fq = json.loads(class_fq)
+                        df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
 
-                    
-                # 计算FPS
-                c_time = time.time()
-                fps = 1 / (c_time - p_time)
-                p_time = c_time
+                    # 计算FPS
+                    c_time = time.time()
+                    fps = 1 / (c_time - p_time)
+                    p_time = c_time
 
-                # 更新推理结果
-                get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
+                    # 更新推理结果
+                    get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
 
 
             # if extract_key_frames:

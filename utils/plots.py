@@ -162,86 +162,6 @@ def output_to_target(output):
     return np.array(targets)
 
 
-# def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max_size=640, max_subplots=16):
-#     # Plot image grid with labels
-
-#     if isinstance(images, torch.Tensor):
-#         images = images.cpu().float().numpy()
-#     if isinstance(targets, torch.Tensor):
-#         targets = targets.cpu().numpy()
-
-#     # un-normalise
-#     if np.max(images[0]) <= 1:
-#         images *= 255
-
-#     tl = 3  # line thickness
-#     tf = max(tl - 1, 1)  # font thickness
-#     bs, _, h, w = images.shape  # batch size, _, height, width
-#     bs = min(bs, max_subplots)  # limit plot images
-#     ns = np.ceil(bs ** 0.5)  # number of subplots (square)
-
-#     # Check if we should resize
-#     scale_factor = max_size / max(h, w)
-#     if scale_factor < 1:
-#         h = math.ceil(scale_factor * h)
-#         w = math.ceil(scale_factor * w)
-
-#     colors = color_list()  # list of colors
-#     mosaic = np.full((int(ns * h), int(ns * w), 3), 255, dtype=np.uint8)  # init
-#     for i, img in enumerate(images):
-#         if i == max_subplots:  # if last batch has fewer images than we expect
-#             break
-
-#         block_x = int(w * (i // ns))
-#         block_y = int(h * (i % ns))
-
-#         img = img.transpose(1, 2, 0)
-#         if scale_factor < 1:
-#             img = cv2.resize(img, (w, h))
-
-#         mosaic[block_y:block_y + h, block_x:block_x + w, :] = img
-#         if len(targets) > 0:
-#             image_targets = targets[targets[:, 0] == i]
-#             boxes = xywh2xyxy(image_targets[:, 2:6]).T
-#             classes = image_targets[:, 1].astype('int')
-#             labels = image_targets.shape[1] == 6  # labels if no conf column
-#             conf = None if labels else image_targets[:, 6]  # check for confidence presence (label vs pred)
-
-#             if boxes.shape[1]:
-#                 if boxes.max() <= 1.01:  # if normalized with tolerance 0.01
-#                     boxes[[0, 2]] *= w  # scale to pixels
-#                     boxes[[1, 3]] *= h
-#                 elif scale_factor < 1:  # absolute coords need scale if image scales
-#                     boxes *= scale_factor
-#             boxes[[0, 2]] += block_x
-#             boxes[[1, 3]] += block_y
-#             for j, box in enumerate(boxes.T):
-#                 cls = int(classes[j])
-#                 color = colors[cls % len(colors)]
-#                 cls = names[cls] if names else cls
-#                 if labels or conf[j] > 0.25:  # 0.25 conf thresh
-#                     label = '%s' % cls if labels else '%s %.1f' % (cls, conf[j])
-#                     # plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
-#                     mosaic = plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
-
-
-#         # Draw image filename labels
-#         if paths:
-#             label = Path(paths[i]).name[:40]  # trim to 40 char
-#             t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
-#             cv2.putText(mosaic, label, (block_x + 5, block_y + t_size[1] + 5), 0, tl / 3, [220, 220, 220], thickness=tf,
-#                         lineType=cv2.LINE_AA)
-
-#         # Image border
-#         cv2.rectangle(mosaic, (block_x, block_y), (block_x + w, block_y + h), (255, 255, 255), thickness=3)
-
-#     if fname:
-#         r = min(1280. / max(h, w) / ns, 1.0)  # ratio to limit image size
-#         mosaic = cv2.resize(mosaic, (int(ns * w * r), int(ns * h * r)), interpolation=cv2.INTER_AREA)
-#         # cv2.imwrite(fname, cv2.cvtColor(mosaic, cv2.COLOR_BGR2RGB))  # cv2 save
-#         Image.fromarray(mosaic).save(fname)  # PIL save
-#     return mosaic
-
 def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max_size=640, max_subplots=16):
     # Plot image grid with labels
 
@@ -268,8 +188,6 @@ def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max
 
     colors = color_list()  # list of colors
     mosaic = np.full((int(ns * h), int(ns * w), 3), 255, dtype=np.uint8)  # init
-    plate_class_id = 0  # "plate"类别ID为0
-
     for i, img in enumerate(images):
         if i == max_subplots:  # if last batch has fewer images than we expect
             break
@@ -284,43 +202,28 @@ def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max
         mosaic[block_y:block_y + h, block_x:block_x + w, :] = img
         if len(targets) > 0:
             image_targets = targets[targets[:, 0] == i]
-            plate_targets = image_targets[image_targets[:, 1] == plate_class_id]  # 获取所有“plate”框
-            other_targets = image_targets[image_targets[:, 1] != plate_class_id]  # 获取其他类别的目标
+            boxes = xywh2xyxy(image_targets[:, 2:6]).T
+            classes = image_targets[:, 1].astype('int')
+            labels = image_targets.shape[1] == 6  # labels if no conf column
+            conf = None if labels else image_targets[:, 6]  # check for confidence presence (label vs pred)
 
-            if plate_targets.shape[0] > 0:
-                # 转换“plate”框的坐标
-                plate_boxes = xywh2xyxy(plate_targets[:, 2:6]).T
-                if plate_boxes.max() <= 1.01:  # 如果归一化（容差0.01）
-                    plate_boxes[[0, 2]] *= w  # 缩放到像素
-                    plate_boxes[[1, 3]] *= h
-                elif scale_factor < 1:  # 如果图像缩放，绝对坐标需要缩放
-                    plate_boxes *= scale_factor
-                plate_boxes[[0, 2]] += block_x
-                plate_boxes[[1, 3]] += block_y
+            if boxes.shape[1]:
+                if boxes.max() <= 1.01:  # if normalized with tolerance 0.01
+                    boxes[[0, 2]] *= w  # scale to pixels
+                    boxes[[1, 3]] *= h
+                elif scale_factor < 1:  # absolute coords need scale if image scales
+                    boxes *= scale_factor
+            boxes[[0, 2]] += block_x
+            boxes[[1, 3]] += block_y
+            for j, box in enumerate(boxes.T):
+                cls = int(classes[j])
+                color = colors[cls % len(colors)]
+                cls = names[cls] if names else cls
+                if labels or conf[j] > 0.25:  # 0.25 conf thresh
+                    label = '%s' % cls if labels else '%s %.1f' % (cls, conf[j])
+                    # plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
+                    mosaic = plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
 
-                # 绘制每个“plate”框
-                for plate_box in plate_boxes.T:
-                    cv2.rectangle(mosaic, (int(plate_box[0]), int(plate_box[1])), (int(plate_box[2]), int(plate_box[3])), (0, 255, 0), thickness=tl)
-
-                    # 在“plate”框内筛选其他类别的目标
-                    for other_target in other_targets:
-                        box = xywh2xyxy(other_target[2:6]).T
-                        if box.max() <= 1.01:  # 如果归一化（容差0.01）
-                            box[[0, 2]] *= w  # 缩放到像素
-                            box[[1, 3]] *= h
-                        elif scale_factor < 1:  # 如果图像缩放，绝对坐标需要缩放
-                            box *= scale_factor
-                        box[[0, 2]] += block_x
-                        box[[1, 3]] += block_y
-
-                        # 判断目标框是否在“plate”框内
-                        if box_in_box(box, plate_box):
-                            cls = int(other_target[1])
-                            color = colors[cls % len(colors)]
-                            cls = names[cls] if names else cls
-                            conf = other_target[6] if other_target.shape[0] == 7 else None
-                            label = '%s' % cls if conf is None else '%s %.1f' % (cls, conf)
-                            mosaic = plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
 
         # Draw image filename labels
         if paths:
@@ -335,12 +238,109 @@ def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max
     if fname:
         r = min(1280. / max(h, w) / ns, 1.0)  # ratio to limit image size
         mosaic = cv2.resize(mosaic, (int(ns * w * r), int(ns * h * r)), interpolation=cv2.INTER_AREA)
+        # cv2.imwrite(fname, cv2.cvtColor(mosaic, cv2.COLOR_BGR2RGB))  # cv2 save
         Image.fromarray(mosaic).save(fname)  # PIL save
     return mosaic
 
-def box_in_box(box, plate_box):
-    # 判断目标框是否在“plate”框内
-    return box[0] >= plate_box[0] and box[1] >= plate_box[1] and box[2] <= plate_box[2] and box[3] <= plate_box[3]
+# def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max_size=640, max_subplots=16):
+#     # Plot image grid with labels
+
+#     if isinstance(images, torch.Tensor):
+#         images = images.cpu().float().numpy()
+#     if isinstance(targets, torch.Tensor):
+#         targets = targets.cpu().numpy()
+
+#     # un-normalise
+#     if np.max(images[0]) <= 1:
+#         images *= 255
+
+#     tl = 3  # line thickness
+#     tf = max(tl - 1, 1)  # font thickness
+#     bs, _, h, w = images.shape  # batch size, _, height, width
+#     bs = min(bs, max_subplots)  # limit plot images
+#     ns = np.ceil(bs ** 0.5)  # number of subplots (square)
+
+#     # Check if we should resize
+#     scale_factor = max_size / max(h, w)
+#     if scale_factor < 1:
+#         h = math.ceil(scale_factor * h)
+#         w = math.ceil(scale_factor * w)
+
+#     colors = color_list()  # list of colors
+#     mosaic = np.full((int(ns * h), int(ns * w), 3), 255, dtype=np.uint8)  # init
+#     plate_class_id = 0  # "plate"类别ID为0
+
+#     for i, img in enumerate(images):
+#         if i == max_subplots:  # if last batch has fewer images than we expect
+#             break
+
+#         block_x = int(w * (i // ns))
+#         block_y = int(h * (i % ns))
+
+#         img = img.transpose(1, 2, 0)
+#         if scale_factor < 1:
+#             img = cv2.resize(img, (w, h))
+
+#         mosaic[block_y:block_y + h, block_x:block_x + w, :] = img
+#         if len(targets) > 0:
+#             image_targets = targets[targets[:, 0] == i]
+#             plate_targets = image_targets[image_targets[:, 1] == plate_class_id]  # 获取所有“plate”框
+#             other_targets = image_targets[image_targets[:, 1] != plate_class_id]  # 获取其他类别的目标
+
+#             if plate_targets.shape[0] > 0:
+#                 # 转换“plate”框的坐标
+#                 plate_boxes = xywh2xyxy(plate_targets[:, 2:6]).T
+#                 if plate_boxes.max() <= 1.01:  # 如果归一化（容差0.01）
+#                     plate_boxes[[0, 2]] *= w  # 缩放到像素
+#                     plate_boxes[[1, 3]] *= h
+#                 elif scale_factor < 1:  # 如果图像缩放，绝对坐标需要缩放
+#                     plate_boxes *= scale_factor
+#                 plate_boxes[[0, 2]] += block_x
+#                 plate_boxes[[1, 3]] += block_y
+
+#                 # 绘制每个“plate”框
+#                 for plate_box in plate_boxes.T:
+#                     cv2.rectangle(mosaic, (int(plate_box[0]), int(plate_box[1])), (int(plate_box[2]), int(plate_box[3])), (0, 255, 0), thickness=tl)
+
+#                     # 在“plate”框内筛选其他类别的目标
+#                     for other_target in other_targets:
+#                         box = xywh2xyxy(other_target[2:6]).T
+#                         if box.max() <= 1.01:  # 如果归一化（容差0.01）
+#                             box[[0, 2]] *= w  # 缩放到像素
+#                             box[[1, 3]] *= h
+#                         elif scale_factor < 1:  # 如果图像缩放，绝对坐标需要缩放
+#                             box *= scale_factor
+#                         box[[0, 2]] += block_x
+#                         box[[1, 3]] += block_y
+
+#                         # 判断目标框是否在“plate”框内
+#                         if box_in_box(box, plate_box):
+#                             cls = int(other_target[1])
+#                             color = colors[cls % len(colors)]
+#                             cls = names[cls] if names else cls
+#                             conf = other_target[6] if other_target.shape[0] == 7 else None
+#                             label = '%s' % cls if conf is None else '%s %.1f' % (cls, conf)
+#                             mosaic = plot_one_box(box, mosaic, label=label, color=color, line_thickness=tl)
+
+#         # Draw image filename labels
+#         if paths:
+#             label = Path(paths[i]).name[:40]  # trim to 40 char
+#             t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+#             cv2.putText(mosaic, label, (block_x + 5, block_y + t_size[1] + 5), 0, tl / 3, [220, 220, 220], thickness=tf,
+#                         lineType=cv2.LINE_AA)
+
+#         # Image border
+#         cv2.rectangle(mosaic, (block_x, block_y), (block_x + w, block_y + h), (255, 255, 255), thickness=3)
+
+#     if fname:
+#         r = min(1280. / max(h, w) / ns, 1.0)  # ratio to limit image size
+#         mosaic = cv2.resize(mosaic, (int(ns * w * r), int(ns * h * r)), interpolation=cv2.INTER_AREA)
+#         Image.fromarray(mosaic).save(fname)  # PIL save
+#     return mosaic
+
+# def box_in_box(box, plate_box):
+#     # 判断目标框是否在“plate”框内
+#     return box[0] >= plate_box[0] and box[1] >= plate_box[1] and box[2] <= plate_box[2] and box[3] <= plate_box[3]
 
 
 def plot_lr_scheduler(optimizer, scheduler, epochs=300, save_dir=''):

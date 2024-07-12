@@ -1,0 +1,10 @@
+train: ./data/train.txt
+val: ./data/val.txt
+test: ./data/test.txt
+
+# number of classes
+nc: 56
+
+# class names
+names: ['a', 'M', 'Q', 'N', 'X', '6', 'h', 't', 'U', 'W', 'b', 'S', 'Z', 'j', 'J', 'k', 's', 'c', 'F', 'm', 'f', 'v', 'L', '2', 'Y', '8', '9', 'R', 'p', 'z', 'E', 'r', 'e', 'i', 'T', 'P', 'B', 'H', 'x', '5', 'g', 'V', 'C', '7', 'A', 'w', '4', '3', 'D', 'y', 'q', 'u', 'd', 'K', 'G', 'n']
+

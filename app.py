@@ -195,7 +195,7 @@ if st.sidebar.checkbox('Load Model'):
                 # 计算FPS
                 c_time = time.time()
                 fps = 1 / (c_time - p_time)
-                p_time = c_tim
+                p_time = c_time
 
                 # 更新推理结果
                 get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)

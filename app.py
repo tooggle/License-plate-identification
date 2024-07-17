@@ -40,7 +40,7 @@ model_type = st.sidebar.selectbox(
 )
 
 st.title(f'{model_type} Predictions')
-sample_img = cv2.imread('logo.jpg')
+sample_img = cv2.imread('logo1.jpg')
 FRAME_WINDOW = st.image(sample_img, channels='BGR')
 cap = None
 

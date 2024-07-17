@@ -12,9 +12,7 @@ from model_utils import get_yolo, color_picker_fn, get_system_stat
 # from ultralytics import YOLO
 import io
 import os
-
 p_time = 0
-
 def open_image_as_file(path):
     # 读取图像
     img = cv2.imread(path)
@@ -30,20 +28,16 @@ def open_image_as_file(path):
     img_file = io.BytesIO(img_encoded.tobytes())
     img_file.name = path  # 设置文件名属性
     return img_file
-
-
 st.sidebar.title('Settings')
 # Choose the model
 model_type = st.sidebar.selectbox(
     # 'Choose YOLO Model', ('YOLO Model', 'YOLOv8', 'YOLOv7')
     'Choose YOLO Model', ('YOLO Model', 'carnumber')
 )
-
 st.title(f'{model_type} Predictions')
 sample_img = cv2.imread('logo.jpg')
 FRAME_WINDOW = st.image(sample_img, channels='BGR')
 cap = None
-
 path_model_file = st.sidebar.text_input(
     f'path to {model_type} Model:',
     f'{model_type}.pt'
@@ -55,7 +49,6 @@ if st.sidebar.checkbox('Load Model'):
         # GPU
         gpu_option = st.sidebar.radio(
             'PU Options:', ('CPU', 'GPU'))
-
         if not torch.cuda.is_available():
             st.sidebar.warning('CUDA Not Available, So choose CPU', icon="⚠️")
         else:
@@ -68,23 +61,18 @@ if st.sidebar.checkbox('Load Model'):
             model = custom(path_or_model=path_model_file)
         if gpu_option == 'GPU':
             model = custom(path_or_model=path_model_file, gpu=True)
-
         # YOLOv8 Model
         # if model_type == 'YOLOv8':
         #     from ultralytics import YOLO
         #     model = YOLO(path_model_file)
-
     # Load Class names
     class_labels = model.names
-
     # Inference Mode
     options = st.sidebar.radio(
         'Options:', ('Image', 'Video','Webcam'), index=0)
-
     # Confidence
     confidence = st.sidebar.slider(
         'Detection Confidence', min_value=0.0, max_value=1.0, value=0.25)
-
     # Draw thickness
     draw_thick = st.sidebar.slider(
         'Draw Thickness:', min_value=1,
@@ -96,7 +84,6 @@ if st.sidebar.checkbox('Load Model'):
         classname = class_labels[i]
         color = color_picker_fn(classname, i)
         color_pick_list.append(color)
-
   # Image
     if options == 'Image':
         option1 = st.sidebar.selectbox(
@@ -149,14 +136,10 @@ if st.sidebar.checkbox('Load Model'):
     #         tfile.write(upload_video_file.read())
     #         cap = cv2.VideoCapture(tfile.name)
     #         # if pred:
-
-
-
     def is_key_frame(prev_frame, curr_frame, threshold=300000):
         diff = cv2.absdiff(prev_frame, curr_frame)
         non_zero_count = np.count_nonzero(diff)
         return non_zero_count > threshold
-
     # 原有的代码
     if options == 'Video':
         upload_video_file = st.sidebar.file_uploader(
@@ -189,23 +172,37 @@ if st.sidebar.checkbox('Load Model'):
                     if prev_frame is not None and gray_frame is not None and is_key_frame(prev_frame, gray_frame):
                         key_frames.append(img)
                     prev_frame = gray_frame
+                img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels, draw_thick)
+                FRAME_WINDOW.image(img, channels='BGR')
                 if frame_count % process_every_n_frames == 0:
                     img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels,
                                                      draw_thick)
                     FRAME_WINDOW.image(img, channels='BGR')
 
                 # 检查 current_no_class 是否存在
+                if current_no_class:
+                    class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
+                    class_fq = json.dumps(class_fq, indent=4)
+                    class_fq = json.loads(class_fq)
+                    df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
                     if current_no_class:
                         class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
                         class_fq = json.dumps(class_fq, indent=4)
                         class_fq = json.loads(class_fq)
                         df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
 
+
+                # 计算FPS
+                c_time = time.time()
+                fps = 1 / (c_time - p_time)
+                p_time = c_time
                     # 计算FPS
                     c_time = time.time()
                     fps = 1 / (c_time - p_time)
                     p_time = c_time
 
+                # 更新推理结果
+                get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
                     # 更新推理结果
                     get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)
 
@@ -214,8 +211,6 @@ if st.sidebar.checkbox('Load Model'):
             #     st.write(f'Extracted {len(key_frames)} key frames.')
             #     for i, frame in enumerate(key_frames):
             #         st.image(frame, caption=f'Key Frame {i+1}', channels='BGR')
-
-
     # Web-cam
     if options == 'Webcam':
         cam_options = st.sidebar.selectbox('Webcam Channel',
@@ -243,7 +238,6 @@ if st.sidebar.checkbox('Load Model'):
                     )
                     break
                 #st.image(img, channels="BGR", use_column_width=True)
-
                 img, current_no_class = get_yolo(img, model_type, model, confidence, color_pick_list, class_labels,
                                                  draw_thick)
                 FRAME_WINDOW.image(img, channels='BGR')
@@ -293,13 +287,11 @@ if st.sidebar.checkbox('Load Model'):
 #         c_time = time.time()
 #         fps = 1 / (c_time - p_time)
 #         p_time = c_time
-
 #         # 检查 current_no_class 是否存在
 #         if current_no_class:
 #             class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
 #             class_fq = json.dumps(class_fq, indent=4)
 #             class_fq = json.loads(class_fq)
 #             df_fq = pd.DataFrame(class_fq.items(), columns=['Class', 'Number'])
-
 #         # Updating Inference results
 #         get_system_stat(stframe1, stframe2, stframe3, fps, df_fq)

@@ -49,8 +49,7 @@ path_model_file = st.sidebar.text_input(
     f'{model_type}.pt'
 )
 if st.sidebar.checkbox('Load Model'):
-        
-     # YOLOv7 Model
+    
     if model_type == 'carnumber':
         model = custom(path_or_model=path_model_file)
 

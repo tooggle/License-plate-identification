@@ -36,7 +36,7 @@ st.sidebar.title('Settings')
 # Choose the model
 model_type = st.sidebar.selectbox(
     # 'Choose YOLO Model', ('YOLO Model', 'YOLOv8', 'YOLOv7')
-    'Choose YOLO Model', ('YOLO Model', 'carnumber')
+    'Choose YOLO Model', ('yolov7', 'carnumber')
 )
 
 st.title(f'{model_type} Predictions')
@@ -73,7 +73,7 @@ if st.sidebar.checkbox('Load Model'):
         # if model_type == 'YOLOv8':
         #     from ultralytics import YOLO
         #     model = YOLO(path_model_file)
-    if model_type == 'YOLO Model':
+    if model_type == 'yolov7':
         # GPU
         gpu_option = st.sidebar.radio(
             'PU Options:', ('CPU', 'GPU'))

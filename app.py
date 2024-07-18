@@ -73,6 +73,23 @@ if st.sidebar.checkbox('Load Model'):
         # if model_type == 'YOLOv8':
         #     from ultralytics import YOLO
         #     model = YOLO(path_model_file)
+        if model_type == 'YOLO Model':
+        # GPU
+        gpu_option = st.sidebar.radio(
+            'PU Options:', ('CPU', 'GPU'))
+
+        if not torch.cuda.is_available():
+            st.sidebar.warning('CUDA Not Available, So choose CPU', icon="⚠️")
+        else:
+            st.sidebar.success(
+                'GPU is Available on this Device, Choose GPU for the best performance',
+                icon="✅"
+            )
+        # Model
+        if gpu_option == 'CPU':
+            model = custom(path_or_model=path_model_file)
+        if gpu_option == 'GPU':
+            model = custom(path_or_model=path_model_file, gpu=True)
 
     # Load Class names
     class_labels = model.names

@@ -73,7 +73,7 @@ if st.sidebar.checkbox('Load Model'):
         # if model_type == 'YOLOv8':
         #     from ultralytics import YOLO
         #     model = YOLO(path_model_file)
-        if model_type == 'YOLO Model':
+    if model_type == 'YOLO Model':
         # GPU
         gpu_option = st.sidebar.radio(
             'PU Options:', ('CPU', 'GPU'))
